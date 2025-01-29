@@ -5,31 +5,31 @@ import java.util.Arrays;
  * Поддерживает добавление, удаление, получение элементов, а также сортировку и очистку коллекции.
  */
 public class MyLinkedList<E> implements MyCollection<E> {
-
+    // Поля класса
     private Node<E> head;
     private Node<E> tail;
     private int size;
 
-    private static class Node<E> {
-        E item;
-        Node<E> next;
-        Node<E> prev;
-
-        Node(Node<E> prev, E element, Node<E> next) {
-            this.item = element;
-            this.next = next;
-            this.prev = prev;
-        }
-    }
-
+    // Конструкторы
     public MyLinkedList() {}
 
+    // Методы класса
     @Override
+    /**
+     * Метод add(E element):
+     *    Добавляет элемент в конец списка, вызывая метод linkLast.
+     */
     public void add(E element) {
         linkLast(element);
     }
 
     @Override
+    /**
+     * Метод add(int index, E element):
+     *    Вставляет элемент по указанному индексу.
+     *    Проверяет границы индекса и вызывает либо linkLast для вставки в конец,
+     *    либо linkBefore для вставки перед указанным узлом.
+     */
     public void add(int index, E element) {
         checkIndex(index);
 
@@ -41,18 +41,30 @@ public class MyLinkedList<E> implements MyCollection<E> {
     }
 
     @Override
+    /**
+     * Метод get(int index):
+     *    Возвращает элемент по заданному индексу после проверки границ.
+     */
     public E get(int index) {
         checkIndex(index);
         return node(index).item;
     }
 
     @Override
+    /**
+     * Метод remove(int index):
+     *    Удаляет узел по указанному индексу и возвращает значение удаленного элемента.
+     */
     public E remove(int index) {
         checkIndex(index);
         return unlink(node(index));
     }
 
     @Override
+    /**
+     * Метод clear():
+     *    Очищает список, обнуляя все ссылки узлов и устанавливая head и tail в null.
+     */
     public void clear() {
         for (Node<E> x = head; x != null;) {
             Node<E> next = x.next;
@@ -66,6 +78,11 @@ public class MyLinkedList<E> implements MyCollection<E> {
     }
 
     @Override
+    /**
+     * Метод sort():
+     *    Сортирует элементы списка, преобразуя их в массив, сортируя массив через
+     *    Arrays.sort и затем заново добавляя отсортированные элементы в список.
+     */
     public void sort() {
         Object[] array = toArray();
         Arrays.sort(array);
@@ -75,12 +92,32 @@ public class MyLinkedList<E> implements MyCollection<E> {
         }
     }
 
+    // Внутренний класс Node
+    private static class Node<E> {
+        E item;
+        Node<E> next;
+        Node<E> prev;
+
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
+    /**
+     * checkIndex проверяет, находится ли индекс внутри допустимых границ.
+     */
     private void checkIndex(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Индекс вне допустимого диапазона: " + index);
         }
     }
 
+    /**
+     * node находит узел по индексу, начиная поиск либо с начала, либо с конца списка в
+     * зависимости от того, где индекс ближе к середине.
+     */
     private Node<E> node(int index) {
         if (index < (size >> 1)) {
             Node<E> x = head;
@@ -94,6 +131,10 @@ public class MyLinkedList<E> implements MyCollection<E> {
             return x;
         }
     }
+
+    /**
+     * linkFirst, linkLast, linkBefore добавляют новый узел соответственно в начало, конец или перед указанным узлом.
+     */
 
     private void linkFirst(E e) {
         final Node<E> f = head;
@@ -110,24 +151,29 @@ public class MyLinkedList<E> implements MyCollection<E> {
         final Node<E> l = tail;
         final Node<E> newNode = new Node<>(l, e, null);
         tail = newNode;
-        if (l == null)
+        if (l == null) {
             head = newNode;
-        else
+        }else {
             l.next = newNode;
-        size++;
+            size++;
+        }
     }
 
     private void linkBefore(E e, Node<E> succ) {
         final Node<E> pred = succ.prev;
         final Node<E> newNode = new Node<>(pred, e, succ);
         succ.prev = newNode;
-        if (pred == null)
+        if (pred == null) {
             head = newNode;
-        else
+        }else {
             pred.next = newNode;
+        }
         size++;
     }
 
+    /**
+     * unlink удаляет указанный узел из списка.
+     */
     private E unlink(Node<E> x) {
         final E element = x.item;
         final Node<E> next = x.next;
@@ -152,6 +198,9 @@ public class MyLinkedList<E> implements MyCollection<E> {
         return element;
     }
 
+    /**
+     * toArray преобразует список в массив объектов.
+     */
     private Object[] toArray() {
         Object[] result = new Object[size];
         int i = 0;
@@ -161,6 +210,9 @@ public class MyLinkedList<E> implements MyCollection<E> {
     }
 
     @Override
+    /**
+     * toString формирует строковое представление списка.
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
         Node<E> current = head;
